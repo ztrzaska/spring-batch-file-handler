@@ -6,28 +6,28 @@ Performing sequence of tasks with spring batch. Jobs are rely on loading csv fil
 ### Configuring sequence of jobs
 
 ```
-        TaskletStep step1 =
-                stepBuilderFactory.get("ETL-file-read1").<User, User>chunk(100)
-                        .reader(userItemReader1)
-                        .processor(userItemProcessor)
-                        .writer(userItemWriter)
-                        .listener(decider)
-                        .build();
-
-        TaskletStep step2 =
-                stepBuilderFactory.get("ETL-file-read2").<User, User>chunk(100)
-                        .reader(userItemReader2)
-                        .processor(userItemProcessor)
-                        .writer(userItemWriter)
-                        .listener(decider)
-                        .build();
-
-        return jobBuilderFactory.get("ETL-job").incrementer(new RunIdIncrementer())
-                .start(step1)
-                .next(decider).on(BatchStatus.FAILED.name()).end()
-                .from(decider).on(BatchStatus.COMPLETED.name()).to(step2)
-                .end()
+TaskletStep step1 =
+        stepBuilderFactory.get("ETL-file-read1").<User, User>chunk(100)
+                .reader(userItemReader1)
+                .processor(userItemProcessor)
+                .writer(userItemWriter)
+                .listener(decider)
                 .build();
+
+TaskletStep step2 =
+        stepBuilderFactory.get("ETL-file-read2").<User, User>chunk(100)
+                .reader(userItemReader2)
+                .processor(userItemProcessor)
+                .writer(userItemWriter)
+                .listener(decider)
+                .build();
+
+return jobBuilderFactory.get("ETL-job").incrementer(new RunIdIncrementer())
+        .start(step1)
+        .next(decider).on(BatchStatus.FAILED.name()).end()
+        .from(decider).on(BatchStatus.COMPLETED.name()).to(step2)
+        .end()
+        .build();
 ```
 
 
